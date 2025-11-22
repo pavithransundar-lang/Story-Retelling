@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pavi's Reading Toolkit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400&family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #4F46E5;
+        --secondary: #EC4899;
+        --paper: #ffffff;
+        --bg: #f3f4f6;
+        --text: #1F2937;
+        --dashed-color: #9CA3AF;
+        --slot-bg: #F3F4F6;
+      }
+
+      body {
+        font-family: 'Andika', sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+      }
+
+      #root {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      /* Paper Sheet Effect for Screen */
+      .paper-sheet {
+        background: white;
+        max-width: 8.5in; /* Letter size width */
+        margin: 0 auto 40px auto;
+        padding: 40px;
+        border-radius: 2px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05), 0 8px 16px rgba(0,0,0,0.05);
+        position: relative;
+      }
+
+      /* Worksheet Layout */
+      .worksheet-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .slot-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .slot-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .slot-number {
+        font-family: 'Fredoka', sans-serif;
+        font-size: 2rem;
+        color: #9CA3AF;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .drop-zone {
+        width: 100%;
+        aspect-ratio: 1;
+        background-color: var(--slot-bg);
+        border: 3px dashed var(--dashed-color);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.2s;
+      }
+
+      .drop-zone.active {
+        background-color: #E0E7FF;
+        border-color: var(--primary);
+      }
+
+      .pool-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 20px;
+        background-color: #FEF3C7; /* Light yellow background for "cutout" area */
+        border: 2px dashed #D97706;
+        border-radius: 16px;
+        min-height: 150px;
+      }
+
+      /* Draggable Card */
+      .draggable-card {
+        width: 100%;
+        background: white;
+        border: 2px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: grab;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        font-size: 0.85rem;
+        line-height: 1.2;
+      }
+
+      .draggable-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        border-color: var(--primary);
+      }
+      
+      .draggable-card.dragging {
+        opacity: 0.4;
+      }
+
+      .card-image {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: #f1f5f9;
+        border-radius: 4px;
+        margin-bottom: 6px;
+        object-fit: cover;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        font-family: 'Fredoka', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+      }
+
+      /* Utilities */
+      .card {
+        background: var(--paper);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* PRINT STYLES */
+      @media print {
+        @page {
+          margin: 0.5cm;
+          size: portrait;
+        }
+        body {
+          background: white;
+          padding: 0;
+          -webkit-print-color-adjust: exact;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .paper-sheet {
+          box-shadow: none;
+          margin: 0;
+          padding: 0;
+          max-width: none;
+          break-after: page;
+        }
+        .paper-sheet:last-child {
+          break-after: auto;
+        }
+        
+        /* Ensure background colors print for the "Cutout" zone */
+        .pool-row {
+           background-color: #FEF3C7 !important;
+           border: 2px dashed #D97706 !important;
+           break-inside: avoid;
+        }
+        
+        .drop-zone {
+           background-color: #F3F4F6 !important;
+           border: 3px dashed #9CA3AF !important;
+        }
+        
+        .cutout-guide {
+          border: 2px dashed #9CA3AF !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
