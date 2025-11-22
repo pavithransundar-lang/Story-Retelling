@@ -678,7 +678,9 @@ const App = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (window.confirm("Are you sure you want to print this toolkit?")) {
+      window.print();
+    }
   };
 
   return (
